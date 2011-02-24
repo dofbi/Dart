@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<!-- saved from url=(0036)http://raphaeljs.com/playground.html -->
+<html lang="en" debug="true">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<title>N'arrête pas</title>
+<link rel="stylesheet" href="css/demo.css" type="text/css" media="screen">
+<link rel="stylesheet" href="css/demo-print.css" type="text/css" media="print">
+<script type="text/javascript" src="js/jquery-1.5.min.js"></script>
+<script type="text/javascript" src="js/jquery_svg/jquery.svg.js"></script>
+<script type="text/javascript" src="http://canvg.googlecode.com/svn/trunk/rgbcolor.js"></script>
+<script type="text/javascript" src="http://canvg.googlecode.com/svn/trunk/canvg.js"></script>
+<script src="js/raphael.js"></script>
+<script type="text/javascript">
+$(function(){
+    function q(k){
+       var qs = window.location.search.substring(1);
+       var t = qs.split("&");
+       for (i=0;i<t.length;i++) {
+        kv = t[i].split("=");
+            if (kv[0] == k) return unescape(kv[1]).replace('+',' ');
+       }
+       return null;
+    }
+
+    var context;
+    function bodyonload() {
+       if (typeof(FlashCanvas) != 'undefined') context = document.getElementById('canvas').getContext;
+       var qUrl = q('url'); if (qUrl != null && qUrl != '') { r(); canvg('canvas', qUrl); }
+       var qSvg = q('svg'); if (qSvg != null && qSvg != '') { r(); canvg('canvas', qSvg); }
+    }
+
+    function render() {
+       var c = document.getElementById('canvas');
+       c.width = 1024;
+       c.height = 768;
+       if (context) c.getContext = context;
+       canvg(c, document.getElementById('svg').value);
+       var svg_content = c.toDataURL();
+       $.ajax({
+                 type:"POST",
+                 url:"svg.php",
+                 data: ({
+                      svg_content: svg_content
+                 }),
+                 timeout: 30000, //30 sec.                            
+       });
+    }   
+
+    function r() {
+        var c = document.getElementById('canvas');
+        c.width = '1000'; //change it to the width of your image
+        c.height = '600'; //change it to the height of your image
+        if (context) c.getContext = context;
+    }
+
+    $("#draw").click(function(){
+        render();
+    });
+
+    $("#draw").click(function(){
+        $('#draw').svg();
+        svg = $('#svg_container').svg('get');
+        svg.clear(true);
+        svg.circle(200, 220, 150, {fill: "red", stroke: "blue", strokeWidth: 5});
+        $("#svg").val(svg.toSVG());
+    });
+});
+</script>
+        <style media="screen">
+            body {
+                margin: 0;
+                padding: 0;
+                text-align: center;
+            }
+            h1 {
+                font-weight: 400;
+                height: 5%;
+            }
+            #canvas {
+                height: 768px;
+                margin: 0 auto;
+                text-align: left;
+                width: 1024px;
+            }
+            #code {
+                font-family: Consolas, Monaco, "Lucida Console", monospace;
+                height: 4em;
+                margin: 10px;
+                padding: 0;
+                width: 90%;
+            }
+            #run {
+                font-size: 2em;
+            }
+        </style>
+        <script>
+            window.onload = function () {
+                var paper = Raphael("canvas", 1024, 768)
+				paper.clear();
+                paper.rect(0, 0, 1024, 768, 10).attr({fill: "#000000", stroke: "none"});
+				
+				setInterval(function () {dessincycle();}, 1000);
+				
+				function dessincycle() {
+				var posx= Math.floor(Math.random()*1024);
+				var posy = Math.floor(Math.random()*768);
+				dessin(posx,posy)
+				//alert(couleur());
+				}
+				function couleur(){
+					var coul = ["aliceblue","azure","blanchedalmond","burlywood","coral","cyan","darkgray","darkmagenta","darkred","darkslategray","deeppink","dodgerblue","fuchsia","goldenrod","grey","indigo","lavenderblush","lightcoral","lightgreen","lightseagreen","lightsteelblue","mediumblue","mediumslateblue","midnightblue","navajowhite","olivedrab","palegoldenrod","papayawhip","plum","rosybrown","sandybrown","silver","slategrey","tan","turquoise","whitesmoke","antiquewhite","beige","blue","cadetblue","cornflowerblue","darkblue","darkgreen","darkolivegreen","darksalmon","darkslategrey","deepskyblue","firebrick","gainsboro","gray","honeydew","ivory","lawngreen","lightcyan","lightgrey","lightskyblue","lightyellow","magenta","mediumorchid","mediumspringgreen","mintcream","navy","orange","palegreen","peachpuff","powderblue","royalblue","seagreen","skyblue","snow","teal","violet","yellow","aqua","bisque","blueviolet","chartreuse","cornsilk","darkcyan","darkgrey","darkorange","darkseagreen","darkturquoise","dimgray","floralwhite","ghostwhite","green","hotpink","khaki","lemonchiffon","lightgoldenrodyellow","lightpink","lightslategray","lime","maroon","mediumpurple","mediumturquoise","mistyrose","oldlace","orangered","paleturquoise","paleturquoise","peru","purple","saddlebrown","seashell","slateblue","springgreen","thistle","wheat","yellowgreen","aquamarine","black","brown","chocolate","crimson","darkgoldenrod","darkkhaki","darkorchid","darkslateblue","darkviolet","dimgrey","forestgreen","gold","greenyellow","indianred","lavender","lightblue","lightgray","lightsalmon","lightslategrey","limegreen","mediumaquamarine","mediumseagreen","mediumvioletred","moccasin","olive","orchid","palevioletred","pink","red","salmon","sienna","slategray","steelblue","tomato","white"]
+					var i = Math.floor(Math.random()*147);
+					return coul[i]
+				}
+				
+				function dessin(sx,sy) {
+                paper.circle(sx, sy, 40).animate({fill: couleur(), stroke: couleur(), "stroke-width": 10, "stroke-opacity": 0.5}, 2000);
+				}
+            };
+        </script>
+    </head>
+    <body>
+        <div id="canvas"></div>
+        <h1>n'arrête pas</h1>
+        <p>La vie est un &eacute;ternel recommencement</p>
+	<button id="draw" style="position: absolute; top:400px; left: 500px;">Draw</button>
+        <p id="copy"><a href="http://raphaeljs.com/">DOFBI</a>&copy;2011</p>
+    
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-1302578-8");
+pageTracker._initData();
+pageTracker._trackPageview();
+</script>
+</body>
+</html>

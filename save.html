@@ -1,0 +1,72 @@
+<html>
+<head>        
+<script type="text/javascript" src="js/jquery-1.5.min.js"></script>                
+<script type="text/javascript" src="js/jquery_svg/jquery.svg.js"></script>
+<script type="text/javascript" src="http://canvg.googlecode.com/svn/trunk/rgbcolor.js"></script>
+<script type="text/javascript" src="http://canvg.googlecode.com/svn/trunk/canvg.js"></script>
+
+<script type="text/javascript">
+$(function(){
+    function q(k){
+       var qs = window.location.search.substring(1);
+       var t = qs.split("&");
+       for (i=0;i<t.length;i++) {
+        kv = t[i].split("=");
+            if (kv[0] == k) return unescape(kv[1]).replace('+',' ');
+       }
+       return null;
+    }
+
+    var context;
+    function bodyonload() {
+       if (typeof(FlashCanvas) != 'undefined') context = document.getElementById('canvas').getContext;
+       var qUrl = q('url'); if (qUrl != null && qUrl != '') { r(); canvg('canvas', qUrl); }
+       var qSvg = q('svg'); if (qSvg != null && qSvg != '') { r(); canvg('canvas', qSvg); }
+    }
+
+    function render() {
+       var c = document.getElementById('canvas');
+       c.width = 400;
+       c.height = 500;
+       if (context) c.getContext = context;
+       canvg(c, document.getElementById('svg').value);
+       var svg_content = c.toDataURL();
+       $.ajax({
+                 type:"POST",
+                 url:"svg.php",
+                 data: ({
+                      svg_content: svg_content
+                 }),
+                 timeout: 30000, //30 sec.                            
+       });
+    }   
+
+    function r() {
+        var c = document.getElementById('canvas');
+        c.width = '1000'; //change it to the width of your image
+        c.height = '600'; //change it to the height of your image
+        if (context) c.getContext = context;
+    }
+
+    $("#svg_container").click(function(){
+        render();
+    });
+
+    $("#draw").click(function(){
+        $('#svg_container').svg();
+        svg = $('#svg_container').svg('get');
+        svg.clear(true);
+        svg.circle(200, 220, 150, {fill: "red", stroke: "blue", strokeWidth: 5});
+        $("#svg").val(svg.toSVG());
+    });
+});
+</script>
+</head>
+<body>
+<textarea id="svg" rows="5" cols="50" style="visibility: hidden;"></textarea><br />
+<canvas id="canvas" width="1000px" height="600px"></canvas>
+<div id="svg_container" style="position: absolute; left: 100px; top: 100px; width: 400px; height: 400px; border: thin solid #4297D7;"></div>
+<button id="draw" style="position: absolute; top:400px; left: 500px;">Draw</button>
+<button id="save" style="position: absolute; top:400px; left: 550px;">Save</button>
+</body>
+</html>
